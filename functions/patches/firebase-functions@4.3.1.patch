@@ -1,0 +1,13 @@
+diff --git a/lib/bin/firebase-functions.js b/lib/bin/firebase-functions.js
+index 5d8156d1d587f110dc9b5460a688cd15fc1e2512..8645226e6dd746ae7c6c72feb67e331ef6d9a6b8 100755
+--- a/lib/bin/firebase-functions.js
++++ b/lib/bin/firebase-functions.js
+@@ -36,7 +36,7 @@ Arguments:
+ }
+ let functionsDir = ".";
+ const args = process.argv.slice(2);
+-if (args.length > 1) {
++if (args.length >= 1) {
+     if (args[0] === "-h" || args[0] === "--help") {
+         printUsageAndExit();
+     }

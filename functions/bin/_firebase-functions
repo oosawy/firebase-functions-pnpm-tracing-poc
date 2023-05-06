@@ -1,0 +1,4 @@
+#!/bin/sh
+basedir=$(dirname "$(echo "$0")")
+cd $basedir/../../../node_modules/.bin
+exec ./firebase-functions "$@"

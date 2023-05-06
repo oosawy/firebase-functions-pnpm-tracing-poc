@@ -1,16 +1,17 @@
 {
   "name": "functions",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && bin/extract-files.js",
     "build:watch": "tsc --watch",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "npm run build && npm run deploy:functions",
+    "deploy:functions": "PATCH_FIREBASE_TOOLS_PACKAGE_WHOLE_SOURCE_AS_IS=1 firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {
-    "node": "16"
+    "node": "18"
   },
   "main": "lib/index.js",
   "dependencies": {
@@ -18,8 +19,14 @@
     "firebase-functions": "^4.3.1"
   },
   "devDependencies": {
+    "@vercel/nft": "^0.22.6",
     "firebase-functions-test": "^3.1.0",
     "typescript": "^5.0.4"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "firebase-functions@4.3.1": "patches/firebase-functions@4.3.1.patch"
+    }
   },
   "private": true
 }

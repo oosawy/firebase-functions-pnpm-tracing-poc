@@ -1,0 +1,45 @@
+diff --git a/lib/deploy/functions/prepareFunctionsUpload.js b/lib/deploy/functions/prepareFunctionsUpload.js
+index 271d222f49a351d52d60cfce08a978106b317acf..3371c77f2bbab05fa2502ab8e9984b34348a513d 100644
+--- a/lib/deploy/functions/prepareFunctionsUpload.js
++++ b/lib/deploy/functions/prepareFunctionsUpload.js
+@@ -55,16 +55,21 @@ async function packageSource(sourceDir, config, runtimeConfig) {
+     const ignore = config.ignore || ["node_modules", ".git"];
+     ignore.push("firebase-debug.log", "firebase-debug.*.log", CONFIG_DEST_FILE);
+     try {
+-        const files = await fsAsync.readdirRecursive({ path: sourceDir, ignore: ignore });
+-        for (const file of files) {
+-            const name = path.relative(sourceDir, file.name);
+-            const fileHash = await (0, hash_1.getSourceHash)(file.name);
+-            hashes.push(fileHash);
+-            archive.file(file.name, {
+-                name,
+-                mode: file.mode,
+-            });
++        if (process.env.PATCH_FIREBASE_TOOLS_PACKAGE_WHOLE_SOURCE_AS_IS) {
++            archive.directory(sourceDir, false);
++        } else {
++            const files = await fsAsync.readdirRecursive({ path: sourceDir, ignore: ignore });
++            for (const file of files) {
++                const name = path.relative(sourceDir, file.name);
++                const fileHash = await (0, hash_1.getSourceHash)(file.name);
++                hashes.push(fileHash);
++                archive.file(file.name, {
++                    name,
++                    mode: file.mode,
++                });
++            }
+         }
++
+         if (typeof runtimeConfig !== "undefined") {
+             const runtimeConfigHashString = JSON.stringify(convertToSortedKeyValueArray(runtimeConfig));
+             hashes.push(runtimeConfigHashString);
+@@ -75,6 +80,9 @@ async function packageSource(sourceDir, config, runtimeConfig) {
+             });
+         }
+         await pipeAsync(archive, fileStream);
++        if (process.env.PATCH_FIREBASE_TOOLS_PACKAGE_WHOLE_SOURCE_AS_IS) {
++            hashes.push(await (0, hash_1.getSourceHash)(tmpFile));
++        }
+     }
+     catch (err) {
+         throw new error_1.FirebaseError("Could not read source directory. Remove links and shortcuts and try again.", {
