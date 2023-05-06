@@ -1,4 +1,7 @@
 {
   "private": true,
-  "packageManager": "pnpm@8.4.0"
+  "packageManager": "pnpm@8.4.0",
+  "devDependencies": {
+    "firebase-tools": "^11.30.0"
+  }
 }
